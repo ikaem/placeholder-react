@@ -33,7 +33,7 @@ const Cart = () => {
             setCartItems(products.map(product => {
                 const quantity = cartItems[cartItems.findIndex(item => item.id === product.id)].quantity;
                 return {...product, quantity}
-            }).sort((a, b) => a.name - b.name));
+            }));
         });
 
     },[]);
@@ -77,7 +77,7 @@ const Cart = () => {
         {
             ...changedItem,
             quantity: Number(value)
-        }].sort((a, b) => a.name - b.name))
+        }])
     }
 
     const removeItemFromCart = (removedItemId) => {
@@ -117,7 +117,7 @@ const Cart = () => {
     <CartPageStyled>
         <h2 className="main-section__page-title">Cart items</h2>
         <ul className="main-section__cart-items">
-            {cartItems.map(cartItem => 
+            {cartItems.slice().sort((a, b) => a.name - b.name).map(cartItem => 
             <li
                 key={cartItem.id}
                 className="cart-item">
