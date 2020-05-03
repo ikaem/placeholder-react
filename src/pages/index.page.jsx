@@ -4,6 +4,7 @@ import { products as fakeProducts } from "../assets/fakeDB";
 import Product from "../components/product.component";
 
 import { CartContext } from "../contexts/cart.context";
+import { getAllProducts } from "../services/backendService";
 
 
 const Home = () => {
@@ -12,7 +13,8 @@ const Home = () => {
     const [ itemForCart, setItemForCart ] = useState({id:"", quantity: 1});
 
     useEffect(() => {
-        setProducts(fakeProducts);
+        // setProducts(fakeProducts);
+        getAllProducts().then(setProducts);
     }, []);
 
     const handleQuantityChange = (e, itemId) => {

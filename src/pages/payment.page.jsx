@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useReducer, useContext } from "react";
 
 import { CartContext } from "../contexts/cart.context";
+import { makeNewOrder } from "../services/backendService";
 
 import { orders as fakeOrders } from "../assets/fakeDB";
 
@@ -20,6 +21,8 @@ const Payment = () => {
 
     const [ orderId, setOrderId ] = useState("");
     const [ isOrderMade, setIsOrderMade ] = useState(false);
+
+    const [ orderOverview, setOrderOverview ] = useState();
 
 
 
@@ -45,7 +48,7 @@ const Payment = () => {
         console.log(paymentDetails);
     }
 
-    const handleSubmit = (e) => {
+/*     const handleSubmit = (e) => {
         e.preventDefault();
         const orderSummary = {
             id: fakeOrders.length + 1,
@@ -57,6 +60,45 @@ const Payment = () => {
         setIsOrderMade(true);
         setOrderId(orderSummary.id);
         // return 
+    } */
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const { cardExpirationMonth, cardExpirationYear, cvv } = paymentDetails;
+        const promocodeDiscounts = cartCost.promocodeDiscounts.map(({ description, discount, id }) => {
+            return {
+                description, 
+                discount: Number(discount),
+                originalId: id
+            }
+        }) 
+
+        const order = {
+            paymentDetails: {
+                ...paymentDetails, 
+                cardExpirationMonth: Number(cardExpirationMonth),
+                cardExpirationYear: Number(cardExpirationYear),
+                cvv: Number(cvv)
+            },
+            cartItems: cartItems.map(({ id, name, price, quantity }) => {
+                return {
+                    originalId: id,
+                    name,
+                    orderedQuantity: quantity,
+                    orderedPricePerItem: price
+                }
+            }),
+            costDetails: {...cartCost, promocodeDiscounts},
+        }
+        try {
+            const newOrder = await makeNewOrder(order);
+            console.log("return from backedn", newOrder);
+            setOrderOverview(newOrder);
+        }
+        catch (error) {
+            console.log(error);
+        }
     }
 
 
@@ -64,10 +106,10 @@ const Payment = () => {
 
     <section className="main-section">
         <h2 className="main-section__page-title">
-            {isOrderMade? "Thank you. You successfully made an orrder": "Payment details"}
+            {orderOverview? "Thank you. You successfully made an order": "Payment details"}
         </h2>
 
-        {!isOrderMade && <div className="main-section__payment-details">
+        {!orderOverview && <div className="main-section__payment-details">
             <p className="payment-details__instructions">Please provide payment details. All fields are mandatory.</p>
 
             <PaymentForm 
@@ -79,7 +121,7 @@ const Payment = () => {
         <div className="main-section__order-summary">
             <h3>Order Summary</h3>
 
-            {isOrderMade && <div className="order-summary__user-info">
+            {orderOverview && <div className="order-summary__user-info">
                 <h3>Order Number: {orderId}</h3>
                 <span>{paymentDetails.nameOnCard}</span>
                 <span>{paymentDetails.email}</span>

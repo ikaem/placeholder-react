@@ -3,6 +3,7 @@ import React, { useState, useEffect, useContext, useReducer } from "react";
 import { Link, useHistory as history } from "react-router-dom";
 
 import { CartContext } from "../contexts/cart.context";
+import { getCartItems, applyPromocode } from "../services/backendService";
 
 import { products as fakeProducts, promocodes as fakePromocodes } from "../assets/fakeDB";
 
@@ -24,26 +25,22 @@ const Cart = () => {
 
     const { grandTotal } = cartCost;
     const { push } = history();
-    console.log("grand total", Number(grandTotal));
    
 
     const [ pendingPromocode, setPendingPromocode ] = useState("");
 
 
-
-
     useEffect(() => {
-        const products = fakeProducts.filter(product => {
-            return cartItems.map(item => item.id).includes(product.id);
-        }).map(product => {
-            const quantity = cartItems[cartItems.findIndex(item => item.id === product.id)].quantity;
-            return {...product, quantity}
-        })
-        setCartItems(products);
-    }, []);
+        getCartItems(cartItems.map(item => item.id)).then(products => {
+            setCartItems(products.map(product => {
+                const quantity = cartItems[cartItems.findIndex(item => item.id === product.id)].quantity;
+                return {...product, quantity}
+            }));
+        });
 
-    console.log("new", cartItems);
+    },[]);
 
+    console.log(cartItems);
 
         useEffect(() => {
         const subtotal = cartItems.reduce((acc, cartItem) => {
@@ -78,18 +75,13 @@ const Cart = () => {
 
 
     const handleCartItemQuantityChange = (e, changedItemId) => {
-        console.log("log here", cartItems);
-
+        const { value } = e.target;
         const changedItem = cartItems.find(item => item.id === changedItemId);
-
-
-
         setCartItems(prevItems => [...prevItems.filter(item => item.id !== changedItemId), 
         {
             ...changedItem,
-            quantity: Number(e.target.value)
+            quantity: Number(value)
         }])
-        console.log("log here 2", cartItems);
 
     }
 
@@ -103,33 +95,27 @@ const Cart = () => {
 
     const handlePendingPromocodeChange = (e) => {
         setPendingPromocode(e.target.value);
-        console.log(e.target.value);
-        console.log(pendingPromocode);
     }
 
-    const addPromocode = (e) => {
+    const addPromocode = async (e) => {
         e.preventDefault();
-
         const canAddCode = !promocodes.some(code => code.combination === false)
-
         if(!canAddCode){
             console.log("cannot combine current code with new codes");
             return;
         };
+            try {
+                const foundPromocode = await applyPromocode(pendingPromocode);
 
-        const foundPromocode = fakePromocodes.find(fakePromocode => fakePromocode.code === pendingPromocode);
-
-        if(!foundPromocode) return;
-        if(!foundPromocode.combination && promocodes.length) return;
-        if(promocodes.some(code => code.id === foundPromocode.id)) return;
-        // some thrwoing errors here...
-
-        if(foundPromocode) setPromocodes(prevCodes => [...prevCodes, foundPromocode]);
-
-
-
-        console.log("ja")
-        setPendingPromocode("");
+                if(!foundPromocode) throw new Error("No such promocode");
+                if(!foundPromocode.combination && promocodes.length) throw new Error("This code cannot be combined with existing codes.");
+                if(promocodes.some(code => code.id === foundPromocode.id)) throw new Error("This code is already applied");
+                setPromocodes(prevCodes => [...prevCodes, foundPromocode]);
+                setPendingPromocode("");
+            }
+            catch (error) {
+                console.log(error);
+            }
     }
 
     return (

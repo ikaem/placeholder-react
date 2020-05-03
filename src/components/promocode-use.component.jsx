@@ -6,10 +6,6 @@ const PromocodeUse = ({
     canCombine, 
     handlePendingPromocodeChange }) => {
 
-
-    console.log(pendingPromocode);
-
-
     return (
     <div className="main-section__promocode-use">
         <h3>Do you have our promocodes?</h3>

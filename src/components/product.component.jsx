@@ -10,8 +10,8 @@ const Product = ({
             {/* <img src="https://source.unsplash.com/800x601/?device" alt="device"/> */}
         </div>
         <div className="product-actual__product-info">
-            <h1 className="product-info__name">Smoke Detector</h1>
-            <span className="product-info__price">€46.00</span>
+            <h1 className="product-info__name">{name}</h1>
+            <span className="product-info__price">€{price}</span>
         </div>
         <div className="product-actual_cart-actions-container">
             <button 
