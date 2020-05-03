@@ -50,7 +50,7 @@ const CartItemStyled = styled.article`
         /* justify-self: start; */
     }
 
-    @media (min-width: 45rem) {
+    @media (min-width: 650px) {
         grid-template-columns: 10rem 1fr 3rem auto auto;
         align-items: end; 
         .item-actual__image-container {

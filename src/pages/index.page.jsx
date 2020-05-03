@@ -78,7 +78,7 @@ const MainPageStyled = styled.section`
         gap: 1rem;
     }
 
-    @media (min-width: 45rem) {
+    @media (min-width: 650px) {
         .main-section__product-list {
             grid-template-columns: repeat(3, 1fr);
         }
