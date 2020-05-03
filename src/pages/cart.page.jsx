@@ -33,7 +33,7 @@ const Cart = () => {
             setCartItems(products.map(product => {
                 const quantity = cartItems[cartItems.findIndex(item => item.id === product.id)].quantity;
                 return {...product, quantity}
-            }));
+            }).sort((a, b) => a.id - b.id));
         });
 
     },[]);
