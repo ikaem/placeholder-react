@@ -2,7 +2,7 @@ import axios from "axios";
 import { productsSelector, promocodeSelector } from "../selectors/backendSelectors";
 
 // const baseUrl = "http://localhost:5000";
-const baseUrl = "https://quiet-lake-34522.herokuapp.com/";
+const baseUrl = "https://quiet-lake-34522.herokuapp.com";
 const allProductsUrl = `${baseUrl}/`;
 const cartItemsUrl = `${baseUrl}/getcartitems`;
 const promocodeUrl = `${baseUrl}/applypromocode`;
