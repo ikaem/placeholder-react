@@ -77,7 +77,7 @@ const Cart = () => {
         {
             ...changedItem,
             quantity: Number(value)
-        }])
+        }].sort((a, b) => a.id - b.id))
 
     }
 
