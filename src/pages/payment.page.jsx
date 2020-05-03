@@ -15,6 +15,7 @@ const Payment = () => {
 
     const { 
         cartItems, 
+        setCartItems,
         cartCost,
     } = useContext(CartContext);
 
@@ -74,6 +75,7 @@ const Payment = () => {
         try {
             const newOrderId = await makeNewOrder(order);
             setOrderId(newOrderId.orderId);
+            setCartItems([]);
         }
         catch (error) {
             console.log(error);
