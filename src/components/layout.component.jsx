@@ -10,7 +10,7 @@ const Layout = ({children}) => {
     return (
     <CartProvider>
         <Header />
-        <main>{children}</main>
+        <main style={{padding: "1rem"}}>{children}</main>
         <Footer />
     </CartProvider>
     );

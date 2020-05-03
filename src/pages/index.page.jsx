@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
-
-import { products as fakeProducts } from "../assets/fakeDB";
-import Product from "../components/product.component";
+import styled from "styled-components";
 
 import { CartContext } from "../contexts/cart.context";
 import { getAllProducts } from "../services/backendService";
+
+import Product from "../components/product.component";
+
+
 
 
 const Home = () => {
@@ -13,7 +15,6 @@ const Home = () => {
     const [ itemForCart, setItemForCart ] = useState({id:"", quantity: 1});
 
     useEffect(() => {
-        // setProducts(fakeProducts);
         getAllProducts().then(setProducts);
     }, []);
 
@@ -38,13 +39,11 @@ const Home = () => {
                 quantity
             }]);
         }
-
         setItemForCart({id: "", quantity: 1});
     }
-
     
     return (
-    <section className="main-section">
+    <MainPageStyled>
 
         <h2 className="main-section__page-title">Our products</h2>
         <ul className="main-section__product-list">
@@ -57,8 +56,33 @@ const Home = () => {
             />
         </li>)}
         </ul>
-    </section>
+    </MainPageStyled>
     )
 }
+
+const MainPageStyled = styled.section`
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+
+    .main-section__page-title {
+        font-size: var(--page-title);
+        text-transform: uppercase;
+        font-weight: 400;
+        color: rgb(167, 167, 167);
+    }
+
+    .main-section__product-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    @media (min-width: 45rem) {
+        .main-section__product-list {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+`;
 
 export default Home;

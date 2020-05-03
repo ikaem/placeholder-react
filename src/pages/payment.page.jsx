@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useReducer, useContext } from "react";
+import React, { useState, useContext } from "react";
+import styled from "styled-components";
 
 import { CartContext } from "../contexts/cart.context";
 import { makeNewOrder } from "../services/backendService";
-
-import { orders as fakeOrders } from "../assets/fakeDB";
 
 
 import PaymentForm from "../components/payment-form.component";
@@ -20,11 +19,6 @@ const Payment = () => {
     } = useContext(CartContext);
 
     const [ orderId, setOrderId ] = useState("");
-    const [ isOrderMade, setIsOrderMade ] = useState(false);
-
-    const [ orderOverview, setOrderOverview ] = useState();
-
-
 
     const [ paymentDetails, setPaymentDetails ] = useState({
         email: "",
@@ -47,20 +41,6 @@ const Payment = () => {
 
         console.log(paymentDetails);
     }
-
-/*     const handleSubmit = (e) => {
-        e.preventDefault();
-        const orderSummary = {
-            id: fakeOrders.length + 1,
-            paymentDetails: paymentDetails,
-            cartItems: cartItems,
-            costDetails: cartCost,
-        }
-        fakeOrders.push(orderSummary);
-        setIsOrderMade(true);
-        setOrderId(orderSummary.id);
-        // return 
-    } */
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -92,24 +72,21 @@ const Payment = () => {
             costDetails: {...cartCost, promocodeDiscounts},
         }
         try {
-            const newOrder = await makeNewOrder(order);
-            console.log("return from backedn", newOrder);
-            setOrderOverview(newOrder);
+            const newOrderId = await makeNewOrder(order);
+            setOrderId(newOrderId.orderId);
         }
         catch (error) {
             console.log(error);
         }
     }
 
-
     return (
-
-    <section className="main-section">
+    <PaymentPageStyled>
         <h2 className="main-section__page-title">
-            {orderOverview? "Thank you. You successfully made an order": "Payment details"}
+            {orderId? "Thank you. You successfully made an order": "Payment details"}
         </h2>
 
-        {!orderOverview && <div className="main-section__payment-details">
+        {!orderId && <div className="main-section__payment-details">
             <p className="payment-details__instructions">Please provide payment details. All fields are mandatory.</p>
 
             <PaymentForm 
@@ -121,10 +98,11 @@ const Payment = () => {
         <div className="main-section__order-summary">
             <h3>Order Summary</h3>
 
-            {orderOverview && <div className="order-summary__user-info">
+            {orderId && <div className="order-summary__user-info">
                 <h3>Order Number: {orderId}</h3>
-                <span>{paymentDetails.nameOnCard}</span>
-                <span>{paymentDetails.email}</span>
+                <p>{paymentDetails.nameOnCard}</p>
+                <p>{paymentDetails.email}</p>
+                <hr/>
 
             </div>}
 
@@ -136,11 +114,76 @@ const Payment = () => {
                 {...cartCost}
             />
         </div>
-        <ContinueShoppingButton />
-    </section>
 
+        <ContinueShoppingButton />
+    </PaymentPageStyled>
     );
 }
+
+const PaymentPageStyled = styled.section`
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+
+    .main-section__page-title {
+        font-size: var(--page-title);
+        text-transform: uppercase;
+        font-weight: 400;
+        color: rgb(167, 167, 167);
+    }
+
+    .main-section__payment-details {
+        background-color: rgb(228, 228, 228);
+        padding: 1rem;
+    }
+
+    .payment-details__instructions {
+        color: black;
+    }
+
+    .main-section__order-summary {
+        padding: 1rem;
+        background-color: rgb(228, 228, 228);
+        align-self: start;
+    }
+
+    .main-section__order-summary > h3 {
+        /* padding: 0 1rem; */
+        margin-bottom: 1rem;
+        font-size: 1rem;
+        font-weight: 400;
+    }
+
+    .order-summary__user-info > p:first-of-type {
+        margin-top: 0.5rem;
+    }
+
+    @media (min-width: 650px) {
+            grid-template-columns: 1fr 1fr 1fr;
+        
+
+        .main-section__page-title {
+            grid-column: span 3;
+        }
+        .main-section__payment-details {
+            grid-column: span 2;
+        }
+
+        .payment-details__form {
+            grid-template-columns: auto 1fr;
+        }
+
+        .form__to-basket-button {
+            justify-self: start;
+            grid-column: 1;
+            grid-row: 7;
+        }
+
+    }
+
+
+
+`;
 
 export default Payment;
 

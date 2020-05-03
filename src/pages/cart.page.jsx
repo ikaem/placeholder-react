@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useContext, useReducer } from "react";
-
-import { Link, useHistory as history } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { useHistory as history } from "react-router-dom";
+import styled from "styled-components";
 
 import { CartContext } from "../contexts/cart.context";
 import { getCartItems, applyPromocode } from "../services/backendService";
-
-import { products as fakeProducts, promocodes as fakePromocodes } from "../assets/fakeDB";
 
 import CartItem from "../components/cart-item.component";
 import CartCostSummary from "../components/cart-cost-summary.component";
@@ -39,8 +37,6 @@ const Cart = () => {
         });
 
     },[]);
-
-    console.log(cartItems);
 
         useEffect(() => {
         const subtotal = cartItems.reduce((acc, cartItem) => {
@@ -119,11 +115,11 @@ const Cart = () => {
     }
 
     return (
-    <section className="main-section">
+    <CartPageStyled>
         <h2 className="main-section__page-title">Cart items</h2>
         <ul className="main-section__cart-items">
             {cartItems.map(cartItem => 
-            <li 
+            <li
                 key={cartItem.id}
                 className="cart-item">
                 <CartItem 
@@ -138,24 +134,64 @@ const Cart = () => {
             {...cartCost}
             removePromocode={removePromocode}/>
 
-        <PromocodeUse 
+        {Boolean(cartItems.length) && <PromocodeUse 
             addPromocode={addPromocode}
             canCombine={!promocodes.some(code => !code.combination)}
             handlePendingPromocodeChange={handlePendingPromocodeChange}
             pendingPromocode={pendingPromocode}
-        />
+        />}
 
         <button 
             disabled={!Number(grandTotal)}
             onClick={() => push("/payment")}
             className="main-section__to-payment-details-button">
             To Payment Details
-            <span>>></span>
+            <span> >></span>
         </button>
         <ContinueShoppingButton />
-    </section>
+    </CartPageStyled>
 
     );
 }
+
+const CartPageStyled = styled.section`
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+
+    .main-section__page-title {
+        font-size: var(--page-title);
+        text-transform: uppercase;
+        font-weight: 400;
+        color: rgb(167, 167, 167);
+    }
+
+    .main-section__cart-items {
+        background-color: rgb(228, 228, 228);
+        display: flex;
+        flex-direction:column;
+        padding: 1rem 1rem 0;
+    }
+
+    .cart-item {
+        padding-bottom: 1rem;
+        border-bottom: 1px solid black;
+        margin-bottom: 1rem;
+    }
+
+    @media (min-width: 650px) {
+        grid-template-columns: 1fr 1fr 1fr;
+        align-items: start;
+
+        .main-section__page-title {
+            grid-column: span 3;
+        }
+        .main-section__cart-items {
+            grid-column: span 2;
+            grid-row: span 4;
+        }
+    }
+
+`;
 
 export default Cart;

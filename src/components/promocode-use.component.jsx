@@ -1,4 +1,5 @@
 import React from "react";
+import styled from "styled-components";
 
 const PromocodeUse = ({
     pendingPromocode,
@@ -7,7 +8,7 @@ const PromocodeUse = ({
     handlePendingPromocodeChange }) => {
 
     return (
-    <div className="main-section__promocode-use">
+    <PromocodeUseStyled>
         <h3>Do you have our promocodes?</h3>
         <form onSubmit={addPromocode}
             className="promocode-use__form">
@@ -22,8 +23,35 @@ const PromocodeUse = ({
             <button type="submit" disabled={!canCombine} className="form__promocode-submit-button">Apply</button>
             <p className="form__promocode-submit-message">{!canCombine && "No combining codes" }</p>
         </form>
-    </div>
+    </PromocodeUseStyled>
     );
 }
+
+const PromocodeUseStyled = styled.div`
+    padding: 1rem;
+    background-color: rgb(238, 226, 226);
+
+    > h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    .promocode-use__form {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .form__promocode-input {
+        flex-grow: 2;
+    }
+
+    .form__promocode-submit-message {
+        margin-top: 0.3rem;
+        color: rgb(128, 25, 25);
+        font-size: 0.8rem;
+        width: 100%;
+    }
+
+`;
 
 export default PromocodeUse;

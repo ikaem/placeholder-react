@@ -1,16 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import styled from "styled-components";
 
 const PaymentForm = ({ handleChange, handleSubmit }) => {
 
-
-
-
     return (
-
-    <form 
-        onSubmit={handleSubmit}
-        className="payment-details__form">
+    <PaymentFormStyled 
+        onSubmit={handleSubmit}>
         <label htmlFor="email-input">Email</label>
         <input 
             type="email" 
@@ -53,21 +49,22 @@ const PaymentForm = ({ handleChange, handleSubmit }) => {
         />
 
         <div className="form__card-details grid-span">
-            <label className="card-details__label grid-span" htmlFor="card-number">
+            <label className="card-details__label" htmlFor="card-number">
                 Card number
+                <input 
+                    className="card-details__label" 
+                    id="card-number" 
+                    type="tel" 
+                    inputMode="numeric" 
+                    pattern="[0-9\s]{13,19}" 
+                    maxLength="19" 
+                    placeholder="XXXX XXXX XXXX XXXX"
+                    name="cardNumber"
+                    onChange={handleChange}
+                    required
+                />
             </label>
-            <input 
-                className="card-details__label grid-span" 
-                id="card-number" 
-                type="tel" 
-                inputMode="numeric" 
-                pattern="[0-9\s]{13,19}" 
-                maxLength="19" 
-                placeholder="XXXX XXXX XXXX XXXX"
-                name="cardNumber"
-                onChange={handleChange}
-                required
-            />
+
             <div 
                 className="card-details__expiration-date">
                 <span 
@@ -96,14 +93,15 @@ const PaymentForm = ({ handleChange, handleSubmit }) => {
                 />
             </div>
 
-            <label 
-                className="card-details__label" htmlFor="card-cvv">CVV
+            <label htmlFor="card-cvv">CVV
                 <input 
                     id="card-cvv" 
                     type="tel" 
-                    inputMode="numeric" maxLength="3" 
+                    inputMode="numeric"
                     placeholder="XXX"
                     name="cvv"
+                    minLength="3"
+                    maxLength="3"
                     onChange={handleChange}
                     required
                 />
@@ -113,13 +111,88 @@ const PaymentForm = ({ handleChange, handleSubmit }) => {
         <button className="form__payment-button">Payment</button>
 
         <Link to="/cart" className="form__to-basket-button">
-        <span>&lt;&lt;</span>
+        <span>&lt;&lt; </span>
             Back to Basket
         </Link>
-
-    </form>
-
+    </PaymentFormStyled>
     );
 }
+
+const PaymentFormStyled = styled.form`
+    padding-top: 2rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.1rem 3rem;
+    /* width: 100%; */
+
+    .grid-span {
+        grid-column: span 2;
+    }
+
+    > input {
+        margin-bottom: 0.9rem;
+        width: 100%;
+    }
+
+    > label {
+        color: rgb(71, 65, 65);
+    }
+
+    .form__card-details {
+        background-color: rgb(128, 128, 128);
+        border-radius: 2px;
+        padding: 1rem 1rem 0;
+        margin-bottom: 1rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.1rem 1rem;
+        color: white;
+
+        .card-details__label,
+        [name=cvv] {
+            display: block;
+        }
+
+        input {
+            margin-top: 0.2rem;
+            margin-bottom: 1rem;
+        }
+    }
+
+    .form__payment-button {
+        margin-bottom: 1rem;
+    }
+
+    .form__to-basket-button {
+        border: 1px solid grey;
+        padding: 2px 0;
+        border-radius: 1px;
+        background-color: #f3f3f3;
+        display: block;
+        text-align: center;
+        color: grey;
+    }
+
+
+@media (min-width: 650px) {
+    grid-template-columns: auto 1fr;
+
+    .form__to-basket-button {
+        justify-self: start;
+        grid-column: 1;
+        grid-row: 7;
+        padding: 0.1rem 0.4rem;
+    }
+
+    .form__payment-button {
+        margin-bottom: 0;
+        grid-column: 2;
+        justify-self: end;
+    }
+}
+
+
+
+`;
 
 export default PaymentForm;
