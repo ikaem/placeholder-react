@@ -19,7 +19,12 @@ const Home = () => {
     }, []);
 
     const handleQuantityChange = (e, itemId) => {
-        setItemForCart({id: itemId, quantity: Number(e.target.value)})
+        const { value } = e.target;
+        // setItemForCart({id: itemId, quantity: Number(e.target.value)})
+        setItemForCart({
+            id: itemId,
+            quantity: Number(value)
+        })
     }
 
     const addItemToCart = (itemId) => {
@@ -28,17 +33,37 @@ const Home = () => {
         const quantity = itemForCart.id === itemId? itemForCart.quantity: 1;
 
         if(itemIndex > -1) {
+            // setCartItems([...cartItems.filter(item => item.id !== itemId), {
+            //     id: itemId, 
+            //     quantity: cartItems[itemIndex].quantity + quantity
+            // }]);
+
+            // setCartItems([...cartItems.filter(item => item.id !== itemId), {
+            //     id: itemId, 
+            //     name: "",
+            //     image: "",
+            //     price: "",
+            //     quantity: cartItems[itemIndex].quantity + quantity
+            // }]);
+
             setCartItems([...cartItems.filter(item => item.id !== itemId), {
                 id: itemId, 
+                name: "",
+                image: "",
+                price: "",
                 quantity: cartItems[itemIndex].quantity + quantity
             }]);
         }
         else {
             setCartItems([...cartItems, {
                 id: itemId, 
+                name: "",
+                image: "",
+                price: "",
                 quantity
             }]);
         }
+
         setItemForCart({id: "", quantity: 1});
     }
     

@@ -27,20 +27,40 @@ const Cart = () => {
 
     const [ pendingPromocode, setPendingPromocode ] = useState("");
 
+    const salesPriceCalculation = (id, quantity, price) => {
+        // 1. motion sensor        // 2. smoke sensor
+        if(!(id === "5eaeabc5991b0a38e84002cf" || id === "5eaeabc5991b0a38e84002d1")) return (quantity * price).toFixed(2);
+
+        const salesPrice = id === "5eaeabc5991b0a38e84002cf"? 65: 35;
+        const salesQuantity = id === "5eaeabc5991b0a38e84002cf"? 3: 2;
+
+        const basePricedProducts = quantity % salesQuantity;
+        const basePricedTotal = price * basePricedProducts;
+
+        const salesIteration = Math.floor(quantity / salesQuantity);
+        const saleTotal = salesPrice * salesIteration;
+
+        return (saleTotal + basePricedTotal).toFixed(2);
+    }
 
     useEffect(() => {
+
         getCartItems(cartItems.map(item => item.id)).then(products => {
             setCartItems(products.map(product => {
                 const quantity = cartItems[cartItems.findIndex(item => item.id === product.id)].quantity;
-                return {...product, quantity}
+                return {
+                    ...product, 
+                    quantity, 
+                    totalProductCost: salesPriceCalculation(product.id, quantity, product.price)
+                }
             }).sort((a, b) => a.price - b.price));
         });
 
     },[]);
 
-        useEffect(() => {
+    useEffect(() => {
         const subtotal = cartItems.reduce((acc, cartItem) => {
-            acc = acc + cartItem.price * cartItem.quantity;
+            acc = acc + Number(cartItem.totalProductCost);
             return acc;
         }, 0);
 
@@ -71,13 +91,16 @@ const Cart = () => {
 
 
     const handleCartItemQuantityChange = (e, changedItemId) => {
-        const { value } = e.target;
-        const changedItem = cartItems.find(item => item.id === changedItemId);
-        setCartItems(prevItems => [...prevItems.filter(item => item.id !== changedItemId), 
-        {
-            ...changedItem,
-            quantity: Number(value)
-        }].sort((a, b) => a.price - b.price))
+        const newQuantity= Number(e.target.value);
+        const { price, ...rest } = cartItems.find(item => item.id === changedItemId);
+
+        const changedItem = {
+            ...rest,
+            quantity: newQuantity,
+            price,
+            totalProductCost: salesPriceCalculation(changedItemId, newQuantity, price),
+        }
+        setCartItems(prevItems => [...prevItems.filter(item => item.id !== changedItemId), changedItem ].sort((a, b) => a.price - b.price))
     }
 
     const removeItemFromCart = (removedItemId) => {
@@ -99,21 +122,25 @@ const Cart = () => {
             console.log("cannot combine current code with new codes");
             return;
         };
-            try {
-                const foundPromocode = await applyPromocode(pendingPromocode);
 
-                if(!foundPromocode) throw new Error("No such promocode");
-                if(!foundPromocode.combination && promocodes.length) throw new Error("This code cannot be combined with existing codes.");
-                if(promocodes.some(code => code.id === foundPromocode.id)) throw new Error("This code is already applied");
-                setPromocodes(prevCodes => [...prevCodes, foundPromocode]);
-                setPendingPromocode("");
-            }
-            catch (error) {
-                console.log(error);
-            }
+        try {
+            const foundPromocode = await applyPromocode(pendingPromocode);
+
+            if(!foundPromocode) throw new Error("No such promocode");
+            if(!foundPromocode.combination && promocodes.length) throw new Error("This code cannot be combined with existing codes.");
+            if(promocodes.some(code => code.id === foundPromocode.id)) throw new Error("This code is already applied");
+
+            setPromocodes(prevCodes => {
+                const tempArrangement = [...prevCodes, foundPromocode];
+                return [...tempArrangement.filter(code => code.type === "amount"), ...tempArrangement.filter(code => code.type === "percentage")];
+            })
+
+            setPendingPromocode("");
+        }
+        catch (error) {
+            console.log(error);
+        }
     }
-
-    console.log(cartItems);
 
     return (
     <CartPageStyled>

@@ -13,8 +13,7 @@ const cartCostReducer = (state, action) => {
 
 const CartProvider = ({children}) => {
 
-    const [ cartItems, setCartItems ] = useState([
-    ]);
+    const [ cartItems, setCartItems ] = useState([]);
 
     const [ promocodes, setPromocodes ] = useState([]);
 

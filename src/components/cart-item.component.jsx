@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-const CartItem = ({id, name, price, image, quantity, handleCartItemQuantityChange, removeItemFromCart}) => {
+const CartItem = ({id, name, price, image, quantity, totalProductCost, handleCartItemQuantityChange, removeItemFromCart}) => {
     return (
     <CartItemStyled>
         <div className="item-actual__image-container">
@@ -16,7 +16,7 @@ const CartItem = ({id, name, price, image, quantity, handleCartItemQuantityChang
             onChange={(e) => handleCartItemQuantityChange(e, id)}
             />
 
-        <span className="item-actual__price">€{(price*quantity).toFixed(2)}</span>
+        <span className="item-actual__price">€{totalProductCost}</span>
 
         <button 
             onClick={() => removeItemFromCart(id)}

@@ -144,7 +144,7 @@ const PaymentFormStyled = styled.form`
         padding: 1rem 1rem 0;
         margin-bottom: 1rem;
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
         gap: 0.1rem 1rem;
         color: white;
 
@@ -176,6 +176,10 @@ const PaymentFormStyled = styled.form`
 
 @media (min-width: 650px) {
     grid-template-columns: auto 1fr;
+
+    .form__card-details {
+        grid-template-columns: 1fr 1fr;
+    }
 
     .form__to-basket-button {
         justify-self: start;
